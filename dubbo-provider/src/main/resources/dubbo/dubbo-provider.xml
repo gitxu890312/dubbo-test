@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://dubbo.apache.org/schema/dubbo  http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+
+    <!--当前服务在分布式集群中的名字，与维护者-->
+    <dubbo:application name="dubbo-provider" owner="xum-provider"></dubbo:application>
+
+    <!--注册中心配置 无注册中心配置-->
+    <!--<dubbo:registry address="N/A"></dubbo:registry>-->
+
+    <!--zk单节点配置  subscribe="false" 不订阅此注册中心的服务;register="false" 不在此注册中心注册服务-->
+    <dubbo:registry id="zkOne" address="zookeeper://192.168.62.111:2181" subscribe="false" register="false"></dubbo:registry>
+    <!--zk支持多注册中心-->
+    <dubbo:registry id="zkTwo" address="zookeeper://192.168.62.112:2181" ></dubbo:registry>
+    <!--zk集群配置-->
+    <!--<dubbo:registry protocol="zookeeper" address="192.168.62.111:2181,192.168.62.112:2181"></dubbo:registry>-->
+    <!--<dubbo:registry address="zookeeper://192.168.62.111:2181?backup=192.168.62.112:2181,192.168.62.113:2181"></dubbo:registry>-->
+
+
+    <!--dubbo服务的协议配置及端口号-->
+    <dubbo:protocol name="dubbo" port="20881"></dubbo:protocol>
+
+    <!--暴露HelloSerivce-->
+    <dubbo:service interface="com.sinochem.HelloService" protocol="dubbo" owner="helloOwner" ref="helloServiceImpl" registry="zkOne"></dubbo:service>
+
+    <!--暴露OrderSerivce protocol支持多协议 registry发布到指定的注册中心-->
+    <dubbo:service interface="com.sinochem.OrderService" protocol="dubbo" owner="orderOwner" ref="orderServiceImpl" registry="zkTwo"></dubbo:service>
+
+
+    <bean id="helloServiceImpl" class="com.sinochem.HelloServiceImpl"></bean>
+
+    <bean id="orderServiceImpl" class="com.sinochem.OrderServiceImpl"></bean>
+
+
+</beans>
